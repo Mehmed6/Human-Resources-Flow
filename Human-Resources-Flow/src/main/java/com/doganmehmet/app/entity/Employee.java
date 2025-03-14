@@ -1,5 +1,6 @@
 package com.doganmehmet.app.entity;
 
+import com.doganmehmet.app.enums.EmployeeStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,7 +13,9 @@ import java.util.List;
 @Table(name = "employees")
 public class Employee extends User{
 
-    private boolean blocked = false;
+    @Enumerated(EnumType.STRING)
+    private EmployeeStatus status = EmployeeStatus.ACTIVE;
+
     @Column(name = "failed_login_attempts")
     private int failedLoginAttempts = 0;
 
@@ -30,4 +33,12 @@ public class Employee extends User{
     @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @Column(name = "leave_requests")
     private List<LeaveRequest> leaveRequests;
+
+    public void incFailedLoginAttempts()
+    {
+        failedLoginAttempts++;
+        if (failedLoginAttempts >= 3)
+            status = EmployeeStatus.BLOCKED;
+    }
+
 }
