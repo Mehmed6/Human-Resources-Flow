@@ -1,5 +1,6 @@
 package com.doganmehmet.app.entity;
 
+import com.doganmehmet.app.enums.LeaveStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,7 +25,8 @@ public class LeaveRequest {
     @Column(name = "end_date")
     private LocalDate endDate;
     @Column(name = "leave_status")
-    private String leaveStatus;
+    @Enumerated(EnumType.STRING)
+    private LeaveStatus leaveStatus;
 
     @ManyToOne
     @JoinColumn(name = "employee_id", nullable = false)
