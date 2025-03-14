@@ -1,5 +1,6 @@
 package com.doganmehmet.app.entity;
 
+import com.doganmehmet.app.enums.SalaryType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,6 +19,10 @@ public class Salary {
     private long salaryId;
 
     private double salary;
+
+    @Enumerated(EnumType.STRING)
+    private SalaryType salaryType;
+
     @Column(name = "payment_date")
     private LocalDateTime paymentDate;
 
