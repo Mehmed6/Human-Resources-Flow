@@ -1,27 +1,33 @@
 package com.doganmehmet.app.config;
 
+import com.doganmehmet.app.jwt.JWTAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private static final String AUTHENTICATE = "/authenticate";
     private static final String REGISTER = "/register/**";
     private static final String REFRESH_TOKEN = "/refreshToken";
-    private static final String LOGIN = "/auth/login";
+    private static final String LOGIN = "/auth/login/**";
 
     private final AuthenticationProvider m_authenticationProvider;
+    private final JWTAuthenticationFilter m_authenticationFilter;
 
-    public SecurityConfig(AuthenticationProvider authenticationProvider)
+    public SecurityConfig(AuthenticationProvider authenticationProvider, JWTAuthenticationFilter authenticationFilter)
     {
         m_authenticationProvider = authenticationProvider;
+        m_authenticationFilter = authenticationFilter;
     }
 
     @Bean
@@ -32,7 +38,8 @@ public class SecurityConfig {
                         .requestMatchers(REGISTER, REFRESH_TOKEN, AUTHENTICATE, LOGIN).permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(m_authenticationProvider);
+                .authenticationProvider(m_authenticationProvider)
+                .addFilterBefore(m_authenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
