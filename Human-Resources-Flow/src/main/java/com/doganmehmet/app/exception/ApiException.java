@@ -16,9 +16,4 @@ public class ApiException extends RuntimeException {
         m_myError = myError;
     }
 
-    public ApiException(MyError myError, Object... args)
-    {
-        super(String.format(myError.getErrorMessage(), args));
-        m_myError = myError;
-    }
 }

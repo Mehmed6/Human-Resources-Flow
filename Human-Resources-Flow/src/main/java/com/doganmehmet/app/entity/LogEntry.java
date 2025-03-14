@@ -18,7 +18,7 @@ public class LogEntry {
     @Column(name = "log_entry_id")
     private long logEntryId;
 
-    private LocalDateTime timestamp;
+    private LocalDateTime timestamp = LocalDateTime.now();
     private String message;
     @Column(name = "performed_by")
     private String performedBy;
