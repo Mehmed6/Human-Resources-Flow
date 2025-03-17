@@ -3,6 +3,7 @@ package com.doganmehmet.app.service;
 import com.doganmehmet.app.dto.employee.EmployeeDTO;
 import com.doganmehmet.app.dto.employee.EmployeeLeaveDateRequest;
 import com.doganmehmet.app.dto.employee.EmployeeRequest;
+import com.doganmehmet.app.enums.LogType;
 import com.doganmehmet.app.enums.Role;
 import com.doganmehmet.app.exception.ApiException;
 import com.doganmehmet.app.exception.MyError;
@@ -10,10 +11,10 @@ import com.doganmehmet.app.mapper.IEmployeeMapper;
 import com.doganmehmet.app.repository.IDepartmentRepository;
 import com.doganmehmet.app.repository.IEmployeeRepository;
 import com.doganmehmet.app.repository.IPositionRepository;
+import com.doganmehmet.app.utility.SecurityUtil;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -23,14 +24,16 @@ public class EmployeeService {
     private final IDepartmentRepository m_departmentRepository;
     private final IPositionRepository m_positionRepository;
     private final BCryptPasswordEncoder m_passwordEncoder;
+    private final LogEntryService m_logEntryService;
 
-    public EmployeeService(IEmployeeRepository employeeRepository, IEmployeeMapper employeeMapper, IDepartmentRepository departmentRepository, IPositionRepository positionRepository, BCryptPasswordEncoder passwordEncoder)
+    public EmployeeService(IEmployeeRepository employeeRepository, IEmployeeMapper employeeMapper, IDepartmentRepository departmentRepository, IPositionRepository positionRepository, BCryptPasswordEncoder passwordEncoder, LogEntryService logEntryService)
     {
         m_employeeRepository = employeeRepository;
         m_employeeMapper = employeeMapper;
         m_departmentRepository = departmentRepository;
         m_positionRepository = positionRepository;
         m_passwordEncoder = passwordEncoder;
+        m_logEntryService = logEntryService;
     }
 
     public EmployeeDTO saveEmployee(EmployeeRequest employeeRequest)
@@ -46,6 +49,7 @@ public class EmployeeService {
         employee.setRole(Role.EMPLOYEE);
         employee.setPassword(m_passwordEncoder.encode(employeeRequest.getPassword()));
 
+        m_logEntryService.logger(SecurityUtil.getUsername(), "Employee successfully created", LogType.SUCCESSFUL);
         return m_employeeMapper.toEmployeeDTO(m_employeeRepository.save(employee));
     }
 

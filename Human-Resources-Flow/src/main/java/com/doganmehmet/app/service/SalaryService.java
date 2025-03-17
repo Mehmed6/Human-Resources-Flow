@@ -2,12 +2,14 @@ package com.doganmehmet.app.service;
 
 import com.doganmehmet.app.dto.salary.SalaryDTO;
 import com.doganmehmet.app.dto.salary.SalaryRequest;
+import com.doganmehmet.app.enums.LogType;
 import com.doganmehmet.app.enums.SalaryType;
 import com.doganmehmet.app.exception.ApiException;
 import com.doganmehmet.app.exception.MyError;
 import com.doganmehmet.app.mapper.ISalaryMapper;
 import com.doganmehmet.app.repository.IEmployeeRepository;
 import com.doganmehmet.app.repository.ISalaryRepository;
+import com.doganmehmet.app.utility.SecurityUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,12 +19,14 @@ public class SalaryService {
     private final ISalaryRepository m_salaryRepository;
     private final ISalaryMapper m_salaryMapper;
     private final IEmployeeRepository m_employeeRepository;
+    private final LogEntryService m_logEntryService;
 
-    public SalaryService(ISalaryRepository salaryRepository, ISalaryMapper salaryMapper, IEmployeeRepository employeeRepository)
+    public SalaryService(ISalaryRepository salaryRepository, ISalaryMapper salaryMapper, IEmployeeRepository employeeRepository, LogEntryService logEntryService)
     {
         m_salaryRepository = salaryRepository;
         m_salaryMapper = salaryMapper;
         m_employeeRepository = employeeRepository;
+        m_logEntryService = logEntryService;
     }
 
     public SalaryDTO saveSalary(SalaryRequest salaryRequest)
@@ -33,6 +37,7 @@ public class SalaryService {
         var salary = m_salaryMapper.toSalary(salaryRequest);
         salary.setEmployee(employee);
 
+        m_logEntryService.logger(SecurityUtil.getUsername(), "Salary successfully created", LogType.SUCCESSFUL);
         return m_salaryMapper.toSalaryDTO(m_salaryRepository.save(salary));
     }
 

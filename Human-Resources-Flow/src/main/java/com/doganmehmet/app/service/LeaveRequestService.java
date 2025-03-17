@@ -3,12 +3,13 @@ package com.doganmehmet.app.service;
 import com.doganmehmet.app.dto.leaverequest.LeaveRequestDTO;
 import com.doganmehmet.app.dto.leaverequest.LeaveRequestSAVE;
 import com.doganmehmet.app.enums.LeaveStatus;
+import com.doganmehmet.app.enums.LogType;
 import com.doganmehmet.app.exception.ApiException;
 import com.doganmehmet.app.exception.MyError;
-import com.doganmehmet.app.mapper.IEmployeeMapper;
 import com.doganmehmet.app.mapper.ILeaveRequestMapper;
 import com.doganmehmet.app.repository.IEmployeeRepository;
 import com.doganmehmet.app.repository.ILeaveRequestRepository;
+import com.doganmehmet.app.utility.SecurityUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,14 +19,14 @@ public class LeaveRequestService {
     private final ILeaveRequestRepository m_leaveRequestRepository;
     private final ILeaveRequestMapper m_leaveRequestMapper;
     private final IEmployeeRepository m_employeeRepository;
-    private final IEmployeeMapper m_employeeMapper;
+    private final LogEntryService m_logEntryService;
 
-    public LeaveRequestService(ILeaveRequestRepository leaveRequestRepository, ILeaveRequestMapper leaveRequestMapper, IEmployeeRepository employeeRepository, IEmployeeMapper employeeMapper)
+    public LeaveRequestService(ILeaveRequestRepository leaveRequestRepository, ILeaveRequestMapper leaveRequestMapper, IEmployeeRepository employeeRepository, LogEntryService logEntryService)
     {
         m_leaveRequestRepository = leaveRequestRepository;
         m_leaveRequestMapper = leaveRequestMapper;
         m_employeeRepository = employeeRepository;
-        m_employeeMapper = employeeMapper;
+        m_logEntryService = logEntryService;
     }
 
     private boolean isValidLeaveStatus(String leaveStatus)
@@ -47,13 +48,15 @@ public class LeaveRequestService {
 
         var check = m_leaveRequestRepository.existsByEmployeeAndStartDateAndEndDate(employee, startDate, endDate);
 
-        if (check)
+        if (check) {
+            m_logEntryService.logger(SecurityUtil.getUsername(), "Leave request already exists", LogType.ALREADY_EXISTS_EXCEPTION);
             throw new ApiException(MyError.LEAVE_REQUEST_ALREADY_EXISTS);
+        }
 
         var leaveRequest = m_leaveRequestMapper.toLeaveRequest(saveRequest);
         leaveRequest.setEmployee(employee);
         leaveRequest.setLeaveStatus(LeaveStatus.PENDING);
-
+        m_logEntryService.logger(SecurityUtil.getUsername(), "Leave Request successfully created", LogType.SUCCESSFUL);
         return m_leaveRequestMapper.toLeaveRequestDTO(m_leaveRequestRepository.save(leaveRequest));
     }
 
@@ -87,6 +90,7 @@ public class LeaveRequestService {
 
         leaveRequest.setLeaveStatus(LeaveStatus.APPROVED);
         m_leaveRequestRepository.save(leaveRequest);
+        m_logEntryService.logger(SecurityUtil.getUsername(), "Leave Request approved successfully", LogType.SUCCESSFUL);
         return m_leaveRequestMapper.toLeaveRequestDTO(leaveRequest);
     }
 
@@ -97,6 +101,7 @@ public class LeaveRequestService {
 
         leaveRequest.setLeaveStatus(LeaveStatus.REJECTED);
         m_leaveRequestRepository.save(leaveRequest);
+        m_logEntryService.logger(SecurityUtil.getUsername(), "Leave Request rejected successfully", LogType.SUCCESSFUL);
         return m_leaveRequestMapper.toLeaveRequestDTO(leaveRequest);
     }
 }

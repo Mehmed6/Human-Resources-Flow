@@ -5,6 +5,7 @@ import com.doganmehmet.app.dto.login.LoginRequest;
 import com.doganmehmet.app.entity.JwtToken;
 import com.doganmehmet.app.entity.User;
 import com.doganmehmet.app.enums.EmployeeStatus;
+import com.doganmehmet.app.enums.LogType;
 import com.doganmehmet.app.exception.ApiException;
 import com.doganmehmet.app.exception.MyError;
 import com.doganmehmet.app.jwt.JWTTransactions;
@@ -24,6 +25,7 @@ public class LoginService {
     private final IRefreshTokenRepository m_refreshTokenRepository;
     private final JWTTransactions m_jwtTransactions;
     private final IJwtTokenMapper m_jwtTokenMapper;
+    private final LogEntryService m_logEntryService;
 
     public LoginService(IEmployeeRepository employeeRepository,
                         IAdminRepository adminRepository,
@@ -31,7 +33,8 @@ public class LoginService {
                         IJwtTokenRepository jwtTokenRepository,
                         IRefreshTokenRepository refreshTokenRepository,
                         JWTTransactions jwtTransactions,
-                        IJwtTokenMapper jwtTokenMapper)
+                        IJwtTokenMapper jwtTokenMapper,
+                        LogEntryService logEntryService)
     {
         m_employeeRepository = employeeRepository;
         m_adminRepository = adminRepository;
@@ -40,6 +43,7 @@ public class LoginService {
         m_refreshTokenRepository = refreshTokenRepository;
         m_jwtTransactions = jwtTransactions;
         m_jwtTokenMapper = jwtTokenMapper;
+        m_logEntryService = logEntryService;
     }
 
     private JwtTokenDTO generateTokens(User user)
@@ -60,7 +64,7 @@ public class LoginService {
 
         m_refreshTokenRepository.save(refreshToken);
         var savedJwtToken = m_jwtTokenRepository.save(new JwtToken(accessToken, user, refreshToken));
-
+        m_logEntryService.logger(user.getUsername(), "Create JWT and Refresh Token", LogType.CREATE_TOKENS);
         return m_jwtTokenMapper.toJwtTokenDTO(savedJwtToken);
     }
 
@@ -69,8 +73,10 @@ public class LoginService {
         var user = m_employeeRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new ApiException(MyError.USER_NOT_FOUND));
 
-        if (user.getStatus() == EmployeeStatus.BLOCKED)
+        if (user.getStatus() == EmployeeStatus.BLOCKED) {
+            m_logEntryService.logger(user.getUsername(), "User is blocked", LogType.ACCOUNT_LOCKED);
             throw new ApiException(MyError.USER_BLOCKED);
+        }
 
         try {
             var auth = new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword());
@@ -82,7 +88,7 @@ public class LoginService {
         } catch (BadCredentialsException ignore) {
             user.incFailedLoginAttempts();
             m_employeeRepository.save(user);
-
+            m_logEntryService.logger(user.getUsername(), "Incorrect Password", LogType.INCORRECT_PASSWORD);
             throw new ApiException(MyError.PASSWORD_INCORRECT);
         }
 
@@ -99,6 +105,7 @@ public class LoginService {
             m_authenticationProvider.authenticate(auth);
         }
         catch (BadCredentialsException ignore) {
+            m_logEntryService.logger(request.getUsername(), "Incorrect Password", LogType.INCORRECT_PASSWORD);
             throw new ApiException(MyError.PASSWORD_INCORRECT);
         }
 

@@ -3,6 +3,7 @@ package com.doganmehmet.app.service;
 import com.doganmehmet.app.dto.register.RegisterRequest;
 import com.doganmehmet.app.dto.employee.EmployeeDTO;
 import com.doganmehmet.app.entity.Employee;
+import com.doganmehmet.app.enums.LogType;
 import com.doganmehmet.app.enums.Role;
 import com.doganmehmet.app.exception.ApiException;
 import com.doganmehmet.app.exception.MyError;
@@ -20,14 +21,16 @@ public class RegisterService {
     private final BCryptPasswordEncoder m_bCryptPasswordEncoder;
     private final IDepartmentRepository m_departmentRepository;
     private final IPositionRepository m_positionRepository;
+    private final LogEntryService m_logEntryService;
 
-    public RegisterService(IEmployeeRepository employeeRepository, IEmployeeMapper employeeMapper, BCryptPasswordEncoder bCryptPasswordEncoder, IDepartmentRepository departmentRepository, IPositionRepository positionRepository)
+    public RegisterService(IEmployeeRepository employeeRepository, IEmployeeMapper employeeMapper, BCryptPasswordEncoder bCryptPasswordEncoder, IDepartmentRepository departmentRepository, IPositionRepository positionRepository, LogEntryService logEntryService)
     {
         m_employeeRepository = employeeRepository;
         m_employeeMapper = employeeMapper;
         m_bCryptPasswordEncoder = bCryptPasswordEncoder;
         m_departmentRepository = departmentRepository;
         m_positionRepository = positionRepository;
+        m_logEntryService = logEntryService;
     }
 
     private Employee createAndSaveEmployee(RegisterRequest registerRequest)
@@ -65,6 +68,7 @@ public class RegisterService {
 
         var savedUser = createAndSaveEmployee(registerRequest);
 
+        m_logEntryService.logger(registerRequest.getUsername(), "Registered", LogType.REGISTER);
         return m_employeeMapper.toEmployeeDTO(savedUser);
     }
 }
