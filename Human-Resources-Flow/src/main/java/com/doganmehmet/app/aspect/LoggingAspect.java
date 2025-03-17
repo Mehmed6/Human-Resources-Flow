@@ -2,15 +2,12 @@ package com.doganmehmet.app.aspect;
 
 import com.doganmehmet.app.exception.ApiException;
 import com.doganmehmet.app.exception.MyError;
-import com.doganmehmet.app.service.LogEntryService;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
