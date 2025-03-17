@@ -24,6 +24,7 @@ public enum MyError {
     LEAVE_REQUEST_ALREADY_EXISTS("1012", "Leave Request is already in use!"),
     INVALID_TOKEN_FOR_USER("1013", "Authentication failed: Token does not match the user!"),
     LEAVE_REQUEST_NOT_FOUND("1014", "Leave Request Not Found!"),
+    WRITE_TO_FILE("1015", "An error occurred while writing the file!"),
 
     ;
 
