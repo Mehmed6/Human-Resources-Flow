@@ -10,10 +10,9 @@
 	</parent>
 
 	<groupId>com.doganmehmet</groupId>
-	<artifactId>Application-Maven-Web</artifactId>
+	<artifactId>Human-Resources-Flow</artifactId>
 	<version>1.0.0</version>
-	<name>Application-Maven-Web</name>
-	<description>Generic project for Spring Boot</description>
+	<name>Human-Resources-Flow</name>
 
 	<properties>
 		<maven.compiler.source>17</maven.compiler.source>
