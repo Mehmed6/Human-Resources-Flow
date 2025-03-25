@@ -16,10 +16,16 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private static final String AUTHENTICATE = "/authenticate";
     private static final String REGISTER = "/register/**";
     private static final String REFRESH_TOKEN = "/refreshToken";
     private static final String LOGIN = "/auth/login/**";
+    private static final String [] SWAGGER_PATHS = {
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/swagger-ui.html",
+            "/swagger-ui/index.html",
+            "/webjars/**"
+    };
 
     private final AuthenticationProvider m_authenticationProvider;
     private final JWTAuthenticationFilter m_authenticationFilter;
@@ -35,7 +41,8 @@ public class SecurityConfig {
     {
         http.csrf().disable()
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers(REGISTER, REFRESH_TOKEN, AUTHENTICATE, LOGIN).permitAll()
+                        .requestMatchers(REGISTER, REFRESH_TOKEN, LOGIN).permitAll()
+                        .requestMatchers(SWAGGER_PATHS).permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(m_authenticationProvider)

@@ -15,6 +15,7 @@ The project leverages tools like MapStruct and Lombok to simplify coding and enh
 * **Mapstruct:** Mapstruct is used to simplify object mapping.
 * **Exception Handling:** Custom exception handling is implemented to handle errors.
 * **Spring Security:** Spring Security is used for authentication and authorization.
+* **Swagger:** Swagger is used to document the API endpoints.
 
 ## 💻  Technologies Used
 
@@ -28,6 +29,7 @@ The project leverages tools like MapStruct and Lombok to simplify coding and enh
 * Lombok
 * PostgreSQL
 * Mapstruct
+* Swagger
 
 ## 🔗  Services
 
