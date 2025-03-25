@@ -46,6 +46,7 @@ public class DepartmentController {
     }
 
     @DeleteMapping("/delete/{departmentId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteById(@PathVariable long departmentId)
     {
         m_departmentService.deleteDepartmentById(departmentId);

@@ -86,9 +86,8 @@ public class EmployeeService {
         return m_employeeMapper.toEmployeeDTOList(m_employeeRepository.findAllByPosition(position));
     }
 
-    public List<EmployeeDTO> findEmployeesOnLeaveByDayOfWeek(EmployeeLeaveDateRequest dateRequest)
+    public List<EmployeeDTO> findEmployeesOnLeaveOnDate(EmployeeLeaveDateRequest dateRequest)
     {
-        System.out.println(dateRequest.getDate());
         return m_employeeMapper.toEmployeeDTOList(m_employeeRepository.findEmployeesOnLeaveOnDate(dateRequest.getDate()));
     }
 

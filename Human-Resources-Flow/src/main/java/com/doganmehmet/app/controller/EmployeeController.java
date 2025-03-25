@@ -27,10 +27,10 @@ public class EmployeeController {
         return m_employeeService.saveEmployee(employeeRequest);
     }
 
-    @GetMapping("/find/id/{id}")
-    public EmployeeDTO findById(@PathVariable long id)
+    @GetMapping("/find/id/{employeeId}")
+    public EmployeeDTO findById(@PathVariable long employeeId)
     {
-        return m_employeeService.findByEmployeeId(id);
+        return m_employeeService.findByEmployeeId(employeeId);
     }
 
     @GetMapping("/find/username/{username}")
@@ -60,8 +60,8 @@ public class EmployeeController {
 
     @PostMapping("/find/leave/date")
     @PreAuthorize("hasRole('ADMIN')")
-    public List<EmployeeDTO> findEmployeesOnLeaveByDayOfWeek(@Valid @RequestBody EmployeeLeaveDateRequest dateRequest)
+    public List<EmployeeDTO> findEmployeesOnLeaveOnDate(@Valid @RequestBody EmployeeLeaveDateRequest dateRequest)
     {
-        return m_employeeService.findEmployeesOnLeaveByDayOfWeek(dateRequest);
+        return m_employeeService.findEmployeesOnLeaveOnDate(dateRequest);
     }
 }
