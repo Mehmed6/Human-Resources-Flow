@@ -30,6 +30,7 @@ The project leverages tools like MapStruct and Lombok to simplify coding and enh
 * PostgreSQL
 * Mapstruct
 * Swagger
+* Docker & Docker Compose
 
 ## 🔗  Services
 
@@ -210,3 +211,7 @@ The GlobalExceptionHandler class is a centralized exception handler that catches
 * `Handles Custom Exceptions (ApiException):` This class handles ApiException by extracting error details from the exception and returning a structured response with error codes, messages, and the request path.
 * `Handles Validation Errors (MethodArgumentNotValidException):` If the request fails validation (e.g., required fields are missing or data formats are incorrect), it catches the validation exception and returns a detailed error message with all validation errors.
 * `Global Exception Handler:`Catches any unexpected exceptions that are not explicitly handled. It provides a generic error response with the exception's class name and message.
+
+### Docker & Docker Compose:
+* The project includes a `docker-compose.yml` file that allows you to run the project in a Docker container.
+* To run the project with Docker and Docker Compose, you can easily start the application by using the Docker Compose file. After cloning the project, run the `docker-compose up --build` command to start the application along with all dependencies.
